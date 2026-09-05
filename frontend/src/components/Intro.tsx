@@ -14,7 +14,11 @@ function fadeClass(shown: boolean) {
 		: "opacity-0 translate-y-3";
 }
 
-export function Intro() {
+interface IIntroProps {
+	onComplete: () => void;
+}
+
+export function Intro({ onComplete }: IIntroProps) {
 	const [latestShownGroup, setLatestShownGroup] = useState(0);
 	const [latestShownLineInGroup, setLatestShownLineInGroup] = useState(0);
 	const [isPromptVisible, setIsPromptVisible] = useState(false);
@@ -54,6 +58,7 @@ export function Intro() {
 		}
 		window.addEventListener("keydown", handleKeyDown);
 		window.addEventListener("touchstart", advanceToNextSection);
+
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
 			window.removeEventListener("touchstart", advanceToNextSection);
@@ -91,7 +96,13 @@ export function Intro() {
 			timeouts.forEach(clearTimeout);
 		};
 	}, [latestShownGroup]);
-	console.log("latestshowngroup: ", latestShownGroup);
+
+	useEffect(() => {
+		if (isPromptVisible && latestShownGroup === introGroups.length) {
+			onComplete();
+		}
+	}, [isPromptVisible, latestShownGroup, onComplete]);
+
 	return (
 		<div className="w-[90%] mt-10 text-4xl font-bold text-green-950">
 			{introGroups.map((lines, groupIndex) => {

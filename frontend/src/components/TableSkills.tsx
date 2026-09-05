@@ -3,7 +3,6 @@ import { Checkbox } from "./ui/checkbox";
 import {
 	Table,
 	TableBody,
-	TableCaption,
 	TableCell,
 	TableHead,
 	TableHeader,

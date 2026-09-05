@@ -1,9 +1,9 @@
-import { ScrollableText } from "./components/ScrollableText";
+import { Intro } from "./components/Intro";
 
 function App() {
 	return (
-		<main className="flex flex-col w-full h-[100vh] items-center bg-emerald-100">
-			<ScrollableText />
+		<main className="flex flex-col w-full min-h-screen items-center bg-emerald-100 p-4">
+			<Intro />
 			{/* <TablesMain /> */}
 			{/* <Matcher /> */}
 		</main>

@@ -3,8 +3,8 @@ import { TableSkills } from "./TableSkills";
 
 export function TablesSection() {
 	return (
-		<div className="w-[90%] flex flex-col items-center text-4xl font-bold">
-			<div className="flex w-full mt-2 gap-4 justify-between">
+		<div className="w-[90%] text-4xl font-bold">
+			<div className="flex max-md:flex-col w-full mt-2 gap-4 max-md:gap-10 justify-between">
 				<TableSkills
 					caption="Skills I have 🔨"
 					skills={skillsMock}

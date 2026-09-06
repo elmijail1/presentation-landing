@@ -34,7 +34,7 @@ export function Intro({ onComplete }: IIntroProps) {
 	);
 	const [isPromptVisible, setIsPromptVisible] = useState(false);
 	const [isPromptPulsing, setIsPromptPulsing] = useState(false);
-	const bottomRef = useRef<HTMLDivElement>(null);
+	const latestLineRef = useRef<HTMLParagraphElement>(null);
 
 	useEffect(() => {
 		if (skipIntro) return;
@@ -43,13 +43,11 @@ export function Intro({ onComplete }: IIntroProps) {
 	}, [skipIntro]);
 
 	useEffect(() => {
-		if (skipIntro) return;
-		if (!isPromptVisible && latestShownLineInGroup > 0) {
-			bottomRef.current?.scrollIntoView({
-				behavior: "smooth",
-				block: "nearest",
-			});
-		}
+		if (skipIntro || isPromptVisible || latestShownLineInGroup === 0) return;
+		latestLineRef.current?.scrollIntoView({
+			behavior: "smooth",
+			block: "start",
+		});
 	}, [latestShownLineInGroup, isPromptVisible, skipIntro]);
 
 	useEffect(() => {
@@ -131,11 +129,13 @@ export function Intro({ onComplete }: IIntroProps) {
 				return (
 					<div key={groupKey} className="mt-5 first:mt-0">
 						{lines.map((line, i) => {
+							const isLatest = isCurrent && latestShownLineInGroup - 1 === i;
 							const lineKey = i;
 							return (
 								<p
 									key={lineKey}
-									className={fadeClass(isPast || latestShownLineInGroup > i)}
+									ref={isLatest ? latestLineRef : undefined}
+									className={`scroll-mt-40 ${fadeClass(isPast || latestShownLineInGroup > i)}`}
 								>
 									{line}
 								</p>
@@ -155,7 +155,6 @@ export function Intro({ onComplete }: IIntroProps) {
 					Press Enter ⌨️ or touch here 📱 to continue...
 				</div>
 			)}
-			<div ref={bottomRef} className="shrink-0 h-15 w-10" />
 		</div>
 	);
 }

@@ -1,10 +1,10 @@
-import { Form } from "@base-ui/react";
+import { type BaseUIEvent, Form } from "@base-ui/react";
 import { useState } from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { MatchResults } from "./MatchResults";
-import type { TMatcherStage } from "../types";
 import { matchResutlsData } from "../data/matchResultsData";
+import type { TMatcherStage } from "../types";
+import { MatchResults } from "./MatchResults";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 interface IMatcherProps {
 	isIntroComplete: boolean;
@@ -12,7 +12,7 @@ interface IMatcherProps {
 
 export function Matcher({ isIntroComplete }: IMatcherProps) {
 	const [skills, setSkills] = useState<string[]>([""]);
-	const [stage, setStage] = useState<TMatcherStage>("match");
+	const [stage, setStage] = useState<TMatcherStage>("form");
 
 	function updateSkill(index: number, value: string) {
 		setSkills((prev) => prev.map((skill, i) => (i === index ? value : skill)));
@@ -27,7 +27,7 @@ export function Matcher({ isIntroComplete }: IMatcherProps) {
 			setSkills((prev) => prev.filter((_i, ind) => index !== ind));
 		}
 	}
-	function handleSubmit(e: SubmitEvent) {
+	function handleSubmit(e: BaseUIEvent<React.SubmitEvent<HTMLFormElement>>) {
 		e.preventDefault();
 		setStage("loading");
 		const nonEmptySkills = skills.map((s) => s.trim()).filter(Boolean);
@@ -59,7 +59,7 @@ export function Matcher({ isIntroComplete }: IMatcherProps) {
 			<p className="text-2xl text-gray-400 mt-2 mb-4">
 				Enter up to 5 most important skills to see how well I match your case!
 			</p>
-			<Form onSubmit={(e) => handleSubmit(e)} className="w-[70%]">
+			<Form onSubmit={handleSubmit} className="w-[70%]">
 				<div className="flex flex-col gap-2">
 					{skills.map((skill, index) => {
 						const key = index;

@@ -49,7 +49,7 @@ export function TableSkills({
 
 	return (
 		<div className="w-1/2 max-md:w-full flex flex-col items-center">
-			<h2 className="font-bold mb-3 text-nowrap">{caption}</h2>
+			<h2 className="font-bold mb-3 md:text-nowrap">{caption}</h2>
 			<div className="max-w-150 mx-auto max-h-80 overflow-y-auto w-full rounded-2xl overflow-hidden">
 				<Table className="text-2xl">
 					<TableHeader

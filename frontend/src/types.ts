@@ -4,3 +4,9 @@ export type TSkill = {
 	category: string;
 	iHaveIt: boolean;
 };
+
+export type TMatcherStage = "form" | "loading" | "match";
+export type TMatchResultData = {
+	score: number;
+	comment: string;
+};

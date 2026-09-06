@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
+import { ToastCopyFailure, ToastCopySuccess } from "./Toasts";
 
 const URL_LINKEDIN = import.meta.env.VITE_URL_LINKEDIN || "";
 const URL_GITHUB = import.meta.env.VITE_URL_GITHUB || "";
@@ -6,33 +8,7 @@ const EMAIL_ADDRESS = import.meta.env.VITE_EMAIL_ADDRESS || "";
 
 export function ContactsButton() {
 	const [contactsOpen, setContactsOpen] = useState(false);
-	const [emailCopied, setEmailCopied] = useState(false);
-	const [emailCopyingFailed, setEmailCopyingFailed] = useState(false);
-
-	useEffect(() => {
-		if (emailCopied) {
-			setTimeout(() => {
-				setEmailCopied(false);
-			}, 2000);
-		}
-		if (emailCopyingFailed) {
-			setTimeout(() => {
-				setEmailCopyingFailed(false);
-			}, 2000);
-		}
-	}, [emailCopied, emailCopyingFailed]);
-
-	async function handleCopyEmail() {
-		try {
-			await navigator.clipboard.writeText(EMAIL_ADDRESS);
-			setEmailCopied(true);
-		} catch (err) {
-			setEmailCopyingFailed(true);
-			console.error("Failed to copy email to clipboard: ", err);
-		} finally {
-			setContactsOpen(false);
-		}
-	}
+	const { justCopied, copyFailed, copy } = useCopyToClipboard();
 
 	return (
 		<>
@@ -60,7 +36,10 @@ export function ContactsButton() {
 						<button
 							type="button"
 							className="hover:underline cursor-pointer"
-							onClick={handleCopyEmail}
+							onClick={() => {
+								copy(EMAIL_ADDRESS);
+								setContactsOpen(false);
+							}}
 						>
 							Email
 						</button>
@@ -83,18 +62,8 @@ export function ContactsButton() {
 					</button>
 				</ul>
 			</div>
-			{/*
-			 */}
-			{emailCopied && (
-				<div className="fixed top-3 mx-auto bg-purple-100 text-lg font-normal px-4 py-2 rounded-xl">
-					✅ Email copied
-				</div>
-			)}
-			{emailCopyingFailed && (
-				<div className="fixed top-3 mx-auto bg-red-100 text-lg font-normal px-4 py-2 rounded-xl">
-					❌ Failed to copy email – try again in a while
-				</div>
-			)}
+			{justCopied && <ToastCopySuccess />}
+			{copyFailed && <ToastCopyFailure />}
 		</>
 	);
 }

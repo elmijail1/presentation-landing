@@ -1,5 +1,6 @@
 import type { TMatcherStage, TMatchResultData } from "@/types";
-import { useEffect, useState } from "react";
+import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
+import { ToastCopyFailure, ToastCopySuccess } from "./Toasts";
 
 const URL_LINKEDIN = import.meta.env.VITE_URL_LINKEDIN || "";
 const URL_GITHUB = import.meta.env.VITE_URL_GITHUB || "";
@@ -11,22 +12,6 @@ interface IMatchResultsProps {
 }
 
 export function MatchResults({ stage, data }: IMatchResultsProps) {
-	const [emailCopied, setEmailCopied] = useState(false);
-	const [emailCopyingFailed, setEmailCopyingFailed] = useState(false);
-
-	useEffect(() => {
-		if (emailCopied) {
-			setTimeout(() => {
-				setEmailCopied(false);
-			}, 2000);
-		}
-		if (emailCopyingFailed) {
-			setTimeout(() => {
-				setEmailCopyingFailed(false);
-			}, 2000);
-		}
-	}, [emailCopied, emailCopyingFailed]);
-
 	function determineColor() {
 		if (data.score === 5 || data.score === 4) {
 			return "from-teal-400 to-teal-500";
@@ -36,16 +21,7 @@ export function MatchResults({ stage, data }: IMatchResultsProps) {
 			return "from-orange-400 to-orange-500";
 		}
 	}
-
-	async function handleCopyEmail() {
-		try {
-			await navigator.clipboard.writeText(EMAIL_ADDRESS);
-			setEmailCopied(true);
-		} catch (err) {
-			setEmailCopyingFailed(true);
-			console.error("Failed to copy email to clipboard: ", err);
-		}
-	}
+	const { justCopied, copyFailed, copy } = useCopyToClipboard();
 
 	return (
 		<div
@@ -69,7 +45,7 @@ export function MatchResults({ stage, data }: IMatchResultsProps) {
 						<button
 							type="button"
 							className="underline cursor-pointer"
-							onClick={handleCopyEmail}
+							onClick={() => copy(EMAIL_ADDRESS)}
 						>
 							Email
 						</button>
@@ -81,16 +57,8 @@ export function MatchResults({ stage, data }: IMatchResultsProps) {
 					</li>
 				</ul>
 			</div>
-			{emailCopied && (
-				<div className="fixed top-3 mx-auto bg-purple-100 text-lg font-normal px-4 py-2 rounded-xl">
-					✅ Email copied
-				</div>
-			)}
-			{emailCopyingFailed && (
-				<div className="fixed top-3 mx-auto bg-red-100 text-lg font-normal px-4 py-2 rounded-xl">
-					❌ Failed to copy email – try again in a while
-				</div>
-			)}
+			{justCopied && <ToastCopySuccess />}
+			{copyFailed && <ToastCopyFailure />}
 		</div>
 	);
 }

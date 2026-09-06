@@ -59,7 +59,7 @@ export function Matcher({ isIntroComplete }: IMatcherProps) {
 			<p className="text-2xl text-gray-400 mt-2 mb-4">
 				Enter up to 5 most important skills to see how well I match your case!
 			</p>
-			<Form onSubmit={handleSubmit} className="w-[70%]">
+			<Form onSubmit={handleSubmit} className="w-[70%] max-w-150">
 				<div className="flex flex-col gap-2">
 					{skills.map((skill, index) => {
 						const key = index;

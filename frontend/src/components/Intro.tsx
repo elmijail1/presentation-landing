@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { introGroups } from "../data/introGroups";
+import {
+	hasSeenIntroRecently,
+	markIntroSeen,
+} from "../scripts/introPersistence";
 import { wait } from "../scripts/utilities";
 
 const LINE_FADE_IN_MS = 900;
@@ -19,25 +23,34 @@ interface IIntroProps {
 }
 
 export function Intro({ onComplete }: IIntroProps) {
-	const [latestShownGroup, setLatestShownGroup] = useState(0);
-	const [latestShownLineInGroup, setLatestShownLineInGroup] = useState(0);
+	const [skipIntro] = useState(hasSeenIntroRecently);
+	const lastGroupLineCount = introGroups[introGroups.length - 1].length;
+
+	const [latestShownGroup, setLatestShownGroup] = useState(
+		skipIntro ? introGroups.length : 0,
+	);
+	const [latestShownLineInGroup, setLatestShownLineInGroup] = useState(
+		skipIntro ? lastGroupLineCount : 0,
+	);
 	const [isPromptVisible, setIsPromptVisible] = useState(false);
 	const [isPromptPulsing, setIsPromptPulsing] = useState(false);
 	const bottomRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
+		if (skipIntro) return;
 		const t = setTimeout(() => setLatestShownGroup(1), 1000);
 		return () => clearTimeout(t);
-	}, []);
+	}, [skipIntro]);
 
 	useEffect(() => {
+		if (skipIntro) return;
 		if (!isPromptVisible && latestShownLineInGroup > 0) {
 			bottomRef.current?.scrollIntoView({
 				behavior: "smooth",
 				block: "nearest",
 			});
 		}
-	}, [latestShownLineInGroup, isPromptVisible]);
+	}, [latestShownLineInGroup, isPromptVisible, skipIntro]);
 
 	useEffect(() => {
 		async function advanceToNextSection() {
@@ -66,7 +79,7 @@ export function Intro({ onComplete }: IIntroProps) {
 	}, [isPromptVisible, latestShownGroup]);
 
 	useEffect(() => {
-		if (latestShownGroup === 0) return;
+		if (skipIntro || latestShownGroup === 0) return;
 		const lines = introGroups[latestShownGroup - 1];
 
 		let cancelled = false;
@@ -95,13 +108,18 @@ export function Intro({ onComplete }: IIntroProps) {
 			cancelled = true;
 			timeouts.forEach(clearTimeout);
 		};
-	}, [latestShownGroup]);
+	}, [latestShownGroup, skipIntro]);
 
 	useEffect(() => {
+		if (skipIntro) {
+			onComplete();
+			return;
+		}
 		if (isPromptVisible && latestShownGroup === introGroups.length) {
+			markIntroSeen();
 			onComplete();
 		}
-	}, [isPromptVisible, latestShownGroup, onComplete]);
+	}, [skipIntro, isPromptVisible, latestShownGroup, onComplete]);
 
 	return (
 		<div className="w-[90%] mt-10 text-4xl font-bold text-green-950">

@@ -1,22 +1,22 @@
-import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
+import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 
 export enum EMySkillRelation {
-	HAVE = "HAVE",
-	WANT_TO_LEARN = "WANT_TO_LEARN",
+  HAVE = 'HAVE',
+  WANT_TO_LEARN = 'WANT_TO_LEARN',
 }
 
 registerEnumType(EMySkillRelation, {
-	name: "EMySkillRelation",
+  name: 'EMySkillRelation',
 });
 
 @ObjectType()
 export class MSkill {
-	@Field(() => ID)
-	id!: string;
+  @Field(() => ID)
+  id!: string;
 
-	@Field()
-	name!: string;
+  @Field()
+  name!: string;
 
-	@Field(() => EMySkillRelation)
-	myRelation: EMySkillRelation;
+  @Field(() => EMySkillRelation, { nullable: true })
+  myRelation?: EMySkillRelation;
 }

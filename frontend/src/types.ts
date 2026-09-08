@@ -12,3 +12,11 @@ export type TMatchResultData = {
   score: number;
   comment: string;
 };
+
+export type TKnowledgeStatus = "HAS" | "WANTS_TO_LEARN" | null;
+export type TUserSkill = {
+  id: string;
+  skillId: string;
+  knowledgeStatus: TKnowledgeStatus;
+  lookingForDevsWithIt: boolean;
+};

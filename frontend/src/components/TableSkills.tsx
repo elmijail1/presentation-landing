@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox } from "./ui/checkbox";
 import {
   Table,
@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import type { TSkill } from "@/types";
+import type { TSkill } from "../types";
 
 type TTableBGColor = "orange" | "purple";
 
@@ -19,6 +19,7 @@ interface ITableSkillsProps {
   secondColHeader: string;
   isLoading: boolean;
   isError: boolean;
+  checkedSkillIds: Set<string>;
 }
 
 export function TableSkills({
@@ -28,8 +29,13 @@ export function TableSkills({
   secondColHeader,
   isLoading,
   isError,
+  checkedSkillIds,
 }: ITableSkillsProps) {
-  const [visitorSkills, setVisitorSkills] = useState<Set<string>>(new Set());
+  const [visitorSkills, setVisitorSkills] =
+    useState<Set<string>>(checkedSkillIds);
+  useEffect(() => {
+    setVisitorSkills(checkedSkillIds);
+  }, [checkedSkillIds]);
 
   function determineColor(color: TTableBGColor, element: "body" | "header") {
     if (element === "body") {
@@ -87,7 +93,7 @@ export function TableSkills({
                   <TableCell>
                     <Checkbox
                       className="mx-auto"
-                      checked={visitorSkills.has(skill.id) ?? false}
+                      checked={visitorSkills.has(skill.id)}
                       onCheckedChange={(checked) =>
                         toggleVisitorSkill(skill.id, checked)
                       }

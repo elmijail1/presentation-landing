@@ -2,18 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { EKnowledgeStatus, MUserSkill } from './model/user-skill.model.js';
 import { userSkillsData } from './user-skills.data.js';
 import { randomUUID } from 'crypto';
+import { UsersService } from '../users/users.service.js';
 
 @Injectable()
 export class UserSkillsService {
+  constructor(private readonly usersService: UsersService) {}
+
   connect(
-    userId: string,
+    userId: string | undefined,
     skillId: string,
     knowledgeStatus?: EKnowledgeStatus,
     lookingForDevsWithIt?: boolean,
   ): MUserSkill {
+    const user = this.usersService.findOrCreate(userId);
+    const userIdSafe = user.id;
+
     const existing = userSkillsData.find(
       (userSkill) =>
-        userSkill.userId === userId && userSkill.skillId === skillId,
+        userSkill.userId === userIdSafe && userSkill.skillId === skillId,
     );
     if (existing) {
       if (knowledgeStatus !== undefined) {
@@ -27,7 +33,7 @@ export class UserSkillsService {
 
     const newUserSkill: MUserSkill = {
       id: randomUUID(),
-      userId,
+      userId: userIdSafe,
       skillId,
       knowledgeStatus,
       lookingForDevsWithIt:

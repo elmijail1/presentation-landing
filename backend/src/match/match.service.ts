@@ -1,0 +1,43 @@
+import { Injectable } from '@nestjs/common';
+import { SkillsService } from '../skills/skills.service.js';
+import { UserSkillsService } from '../user-skills/user-skills.service.js';
+import { MMatchResult } from './models/match-result.model.js';
+import { EMySkillRelation } from '../skills/models/skill.model.js';
+import { UsersService } from '../users/users.service.js';
+
+@Injectable()
+export class MatchService {
+  constructor(
+    private readonly skillsService: SkillsService,
+    private readonly userSkillsService: UserSkillsService,
+    private readonly usersService: UsersService,
+  ) {}
+
+  submit(userId: string | undefined, skillNames: string[]): MMatchResult {
+    const user = this.usersService.findOrCreate(userId);
+    const allSkills = this.skillsService.findAll();
+    const result: MMatchResult = {
+      userId: user.id,
+      matchedSkills: [],
+      missingSkillNames: [],
+    };
+
+    for (const rawName of skillNames) {
+      const skill = allSkills.find(
+        (s) => s.name.toLowerCase() === rawName.toLowerCase(),
+      );
+      if (skill) {
+        this.userSkillsService.connect(user.id, skill.id, undefined, true);
+        if (skill.myRelation === EMySkillRelation.HAVE) {
+          result.matchedSkills.push(skill);
+        } else {
+          result.missingSkillNames.push(rawName);
+        }
+      } else {
+        result.missingSkillNames.push(rawName);
+      }
+    }
+
+    return result;
+  }
+}

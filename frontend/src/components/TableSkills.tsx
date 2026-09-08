@@ -20,6 +20,7 @@ interface ITableSkillsProps {
   isLoading: boolean;
   isError: boolean;
   checkedSkillIds: Set<string>;
+  onToggle: (skillId: string, checked: boolean) => void;
 }
 
 export function TableSkills({
@@ -30,6 +31,7 @@ export function TableSkills({
   isLoading,
   isError,
   checkedSkillIds,
+  onToggle,
 }: ITableSkillsProps) {
   const [visitorSkills, setVisitorSkills] =
     useState<Set<string>>(checkedSkillIds);
@@ -55,6 +57,7 @@ export function TableSkills({
       }
       return next;
     });
+    onToggle(id, checked);
   }
 
   return (

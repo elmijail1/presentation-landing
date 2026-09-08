@@ -1,6 +1,6 @@
 const GUEST_USER_ID_KEY = "guest-user-id";
 
-export function getGuestUserId(): string | null {
+export function getGuestUserIdLocalStorage(): string | null {
   try {
     return localStorage.getItem(GUEST_USER_ID_KEY);
   } catch {
@@ -8,7 +8,7 @@ export function getGuestUserId(): string | null {
   }
 }
 
-export function setGuestUserId(id: string): void {
+export function setGuestUserIdLocalStorage(id: string): void {
   try {
     localStorage.setItem(GUEST_USER_ID_KEY, id);
   } catch {

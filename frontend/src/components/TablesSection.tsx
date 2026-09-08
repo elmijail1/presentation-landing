@@ -1,9 +1,10 @@
-import type { TKnowledgeStatus } from "@/types";
+import type { TKnowledgeStatus } from "../types";
 import { useSkills } from "../hooks/useSkills";
 import { TableSkills } from "./TableSkills";
-import { getGuestUserId } from "../scripts/guestUser";
 import { useUserSkills } from "../hooks/useUserSkills";
 import { useMemo } from "react";
+import { useGuestUserId } from "../hooks/useGuestUserId";
+import { useConnectUserSkill } from "../hooks/useConnectUserSkill";
 
 interface ITableSectionProp {
   isIntroComplete: boolean;
@@ -24,7 +25,7 @@ function getCheckedSkillIds(
 }
 
 export function TablesSection({ isIntroComplete }: ITableSectionProp) {
-  const guestUserId = getGuestUserId();
+  const [guestUserIdState, setGuestUserIdStateAndStorage] = useGuestUserId();
 
   const {
     data: haveSkills,
@@ -36,7 +37,9 @@ export function TablesSection({ isIntroComplete }: ITableSectionProp) {
     isLoading: isLoadingWantToLearnSkills,
     isError: isErrorWantToLearnSkills,
   } = useSkills("WANT_TO_LEARN");
-  const { data: userSkills } = useUserSkills(guestUserId);
+  const { data: userSkills } = useUserSkills(guestUserIdState);
+  const connectUserSkill = useConnectUserSkill();
+
   const haveCheckedSkillIds = useMemo(
     () => getCheckedSkillIds(userSkills, "HAS"),
     [userSkills],
@@ -45,6 +48,28 @@ export function TablesSection({ isIntroComplete }: ITableSectionProp) {
     () => getCheckedSkillIds(userSkills, "WANTS_TO_LEARN"),
     [userSkills],
   );
+
+  function handleToggle(
+    skillId: string,
+    skillKnowledge: "HAS" | "WANTS_TO_LEARN",
+    checked: boolean,
+  ) {
+    connectUserSkill.mutate(
+      {
+        userId: guestUserIdState,
+        skillId,
+        knowledgeStatus: checked ? skillKnowledge : null,
+      },
+      {
+        onSuccess: (data) => {
+          const receivedUserId = data.connectUserSkill.userId;
+          if (receivedUserId !== guestUserIdState) {
+            setGuestUserIdStateAndStorage(receivedUserId);
+          }
+        },
+      },
+    );
+  }
 
   return (
     <div
@@ -59,6 +84,7 @@ export function TablesSection({ isIntroComplete }: ITableSectionProp) {
           checkedSkillIds={haveCheckedSkillIds}
           color="orange"
           secondColHeader="Have it too?"
+          onToggle={(skillId, checked) => handleToggle(skillId, "HAS", checked)}
         />
         <TableSkills
           caption="Skills I want to learn 🧠"
@@ -68,6 +94,9 @@ export function TablesSection({ isIntroComplete }: ITableSectionProp) {
           checkedSkillIds={wantToLearnCheckedSkillIds}
           color="purple"
           secondColHeader="Want to learn it too?"
+          onToggle={(skillId, checked) =>
+            handleToggle(skillId, "WANTS_TO_LEARN", checked)
+          }
         />
       </div>
     </div>

@@ -43,4 +43,11 @@ export const userSkillsData: MUserSkill[] = [
     knowledgeStatus: EKnowledgeStatus.WANTS_TO_LEARN,
     lookingForDevsWithIt: false,
   },
+  {
+    id: '7',
+    userId: '2',
+    skillId: '6',
+    knowledgeStatus: EKnowledgeStatus.WANTS_TO_LEARN,
+    lookingForDevsWithIt: false,
+  },
 ];

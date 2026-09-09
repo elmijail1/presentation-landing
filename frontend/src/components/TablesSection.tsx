@@ -3,12 +3,7 @@ import { useSkills } from "../hooks/useSkills";
 import { TableSkills } from "./TableSkills";
 import { useUserSkills } from "../hooks/useUserSkills";
 import { useMemo } from "react";
-import { useGuestUserId } from "../hooks/useGuestUserId";
 import { useConnectUserSkill } from "../hooks/useConnectUserSkill";
-
-interface ITableSectionProp {
-  isIntroComplete: boolean;
-}
 
 function getCheckedSkillIds(
   userSkills:
@@ -24,9 +19,17 @@ function getCheckedSkillIds(
   );
 }
 
-export function TablesSection({ isIntroComplete }: ITableSectionProp) {
-  const [guestUserIdState, setGuestUserIdStateAndStorage] = useGuestUserId();
+interface ITableSectionProp {
+  isIntroComplete: boolean;
+  guestUserIdState: string | null;
+  setGuestUserIdStateAndStorage: (id: string) => void;
+}
 
+export function TablesSection({
+  isIntroComplete,
+  guestUserIdState,
+  setGuestUserIdStateAndStorage,
+}: ITableSectionProp) {
   const {
     data: haveSkills,
     isLoading: isLoadingHaveSkills,

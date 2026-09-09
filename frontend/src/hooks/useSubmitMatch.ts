@@ -1,5 +1,5 @@
 import { graphqlClient } from "../lib/graphqlClient";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { gql } from "graphql-request";
 
 const SUBMIT_MATCH_MUTATION = gql`
@@ -9,6 +9,7 @@ const SUBMIT_MATCH_MUTATION = gql`
       matchedSkills {
         id
       }
+      missingSkillNames
     }
   }
 `;
@@ -17,6 +18,7 @@ type TSubmitMatchResponse = {
   submitMatch: {
     userId: string;
     matchedSkills: { id: string }[];
+    missingSkillNames: string[];
   };
 };
 

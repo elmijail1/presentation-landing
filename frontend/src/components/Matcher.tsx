@@ -1,12 +1,12 @@
 import { type BaseUIEvent, Form } from "@base-ui/react";
 import { useEffect, useState } from "react";
-import { matchResutlsData } from "../data/matchResultsData";
-import type { TMatchResultData, TMatcherStage } from "../types";
+import type { TMatcherStage, TMatchResults } from "../types";
 import { MatchResults } from "./MatchResults";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useSubmitMatch } from "../hooks/useSubmitMatch";
 import { ToastMatcherFailure } from "./Toasts";
+import { findMatchingTier } from "../data/matchResultsData";
 
 interface IMatcherProps {
   isIntroComplete: boolean;
@@ -21,9 +21,10 @@ export function Matcher({
 }: IMatcherProps) {
   const [skills, setSkills] = useState<string[]>([""]);
   const [stage, setStage] = useState<TMatcherStage>("form");
-  const [matchResult, setMatchResult] = useState<TMatchResultData>(
-    matchResutlsData[0],
-  );
+  const [matchResult, setMatchResult] = useState<TMatchResults>({
+    score: 0,
+    comment: "",
+  });
   const [showErrorToast, setShowErrorToast] = useState(false);
   const submitMatch = useSubmitMatch();
 
@@ -57,12 +58,22 @@ export function Matcher({
       { userId: guestUserIdState, skillNames: nonEmptySkills },
       {
         onSuccess: (data) => {
-          const returnedUserId = data.submitMatch.userId;
+          const { submitMatch: matchResponse } = data;
+          const returnedUserId = matchResponse.userId;
           if (returnedUserId !== guestUserIdState) {
             setGuestUserIdStateAndStorage(returnedUserId);
           }
-          const score = data.submitMatch.matchedSkills.length;
-          setMatchResult(matchResutlsData[score] ?? matchResutlsData[5]);
+          const score = Math.ceil(
+            (matchResponse.matchedSkills.length /
+              (matchResponse.matchedSkills.length +
+                matchResponse.missingSkillNames.length)) *
+              100,
+          );
+          const thresholdData = findMatchingTier(score);
+          setMatchResult({
+            score: score >= 10 ? score : 10,
+            comment: thresholdData.comment,
+          });
           setStage("match");
           setSkills([""]);
         },
@@ -75,7 +86,9 @@ export function Matcher({
   }
 
   if (isIntroComplete && stage === "match") {
-    return <MatchResults stage={stage} data={matchResult} />;
+    return (
+      <MatchResults stage={stage} setStage={setStage} data={matchResult} />
+    );
   }
 
   return (
@@ -103,7 +116,7 @@ export function Matcher({
                 {index !== 0 && (
                   <button
                     type="button"
-                    className="absolute rotate-45 -top-1 right-1 text-gray-500 cursor-pointer"
+                    className="absolute rotate-45 -top-1 right-1 text-gray-500 cursor-pointer hover:brightness-90"
                     onClick={() => removeSkillField(index)}
                   >
                     +

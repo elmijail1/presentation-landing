@@ -20,7 +20,9 @@ export class UserSkillsResolver {
   }
 
   @Query(() => [MUserSkill])
-  userSkills(@Args('userId', { type: () => ID }) userId: string): MUserSkill[] {
+  userSkills(
+    @Args('userId', { type: () => ID }) userId: string,
+  ): Promise<MUserSkill[]> {
     return this.userSkillsService.findByUser(userId);
   }
 }

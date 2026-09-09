@@ -14,6 +14,6 @@ export class ConnectUserSkillInput {
   @Field(() => EKnowledgeStatus, { nullable: true })
   knowledgeStatus?: EKnowledgeStatus;
 
-  @Field({ nullable: true, defaultValue: false })
+  @Field({ nullable: true })
   lookingForDevsWithIt?: boolean;
 }

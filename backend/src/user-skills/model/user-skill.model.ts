@@ -1,9 +1,7 @@
-import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
+import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { EKnowledgeStatus } from '../../generated/prisma/enums.js';
 
-export enum EKnowledgeStatus {
-    HAS = "HAS",
-    WANTS_TO_LEARN = "WANTS_TO_LEARN"
-}
+export { EKnowledgeStatus };
 
 registerEnumType(EKnowledgeStatus, {
   name: 'EKnowledgeStatus',
@@ -11,18 +9,18 @@ registerEnumType(EKnowledgeStatus, {
 
 @ObjectType()
 export class MUserSkill {
-    @Field(() => ID)
-    id!: string
+  @Field(() => ID)
+  id!: string;
 
-    @Field(() => ID)
-    userId!: string
+  @Field(() => ID)
+  userId!: string;
 
-    @Field(() => ID)
-    skillId!: string
+  @Field(() => ID)
+  skillId!: string;
 
-    @Field(() => EKnowledgeStatus, { nullable: true })
-    knowledgeStatus?: EKnowledgeStatus
-    
-    @Field()
-    lookingForDevsWithIt: boolean    
+  @Field(() => EKnowledgeStatus, { nullable: true })
+  knowledgeStatus: EKnowledgeStatus | null;
+
+  @Field()
+  lookingForDevsWithIt: boolean;
 }

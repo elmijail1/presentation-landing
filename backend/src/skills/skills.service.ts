@@ -1,11 +1,14 @@
-import { Injectable } from "@nestjs/common";
-import type { EMySkillRelation, MSkill } from "./models/skill.model.js";
-import { skillsData } from "./skills.data.js";
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { EMySkillRelation, MSkill } from './models/skill.model.js';
 
 @Injectable()
 export class SkillsService {
-	findAll(myRelation?: EMySkillRelation): MSkill[] {
-		if (!myRelation) return skillsData;
-		return skillsData.filter((s) => s.myRelation === myRelation);
-	}
+  constructor(private readonly prisma: PrismaService) {}
+
+  findAll(myRelation?: EMySkillRelation): Promise<MSkill[]> {
+    return this.prisma.skill.findMany({
+      where: myRelation ? { myRelation } : undefined,
+    });
+  }
 }

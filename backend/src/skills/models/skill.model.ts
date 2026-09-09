@@ -1,9 +1,7 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { EMySkillRelation } from '../../generated/prisma/enums.js';
 
-export enum EMySkillRelation {
-  HAVE = 'HAVE',
-  WANT_TO_LEARN = 'WANT_TO_LEARN',
-}
+export { EMySkillRelation };
 
 registerEnumType(EMySkillRelation, {
   name: 'EMySkillRelation',
@@ -18,5 +16,5 @@ export class MSkill {
   name!: string;
 
   @Field(() => EMySkillRelation, { nullable: true })
-  myRelation?: EMySkillRelation;
+  myRelation: EMySkillRelation | null;
 }

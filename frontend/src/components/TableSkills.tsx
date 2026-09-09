@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox } from "./ui/checkbox";
 import {
   Table,
@@ -40,8 +40,12 @@ export function TableSkills({
     ? skills
         .filter((s) => s.name.toLowerCase().includes(filter.toLowerCase()))
         .sort((a, b) => {
-          const aStartsWithFilter = a.name.toLowerCase().startsWith(filter);
-          const bStartsWithFilter = b.name.toLowerCase().startsWith(filter);
+          const aStartsWithFilter = a.name
+            .toLowerCase()
+            .startsWith(filter.toLowerCase());
+          const bStartsWithFilter = b.name
+            .toLowerCase()
+            .startsWith(filter.toLowerCase());
           if (aStartsWithFilter !== bStartsWithFilter) {
             return aStartsWithFilter ? -1 : 1;
           }
@@ -86,7 +90,7 @@ export function TableSkills({
           className="max-w-[70%] px-4 font-normal bg-white rounded-2xl placeholder:text-gray-400"
           placeholder="Start typing to filter..."
           value={filter}
-          onChange={(e) => setFilter(e.target.value.toLowerCase())}
+          onChange={(e) => setFilter(e.target.value)}
         />
       </div>
       <div className="max-w-150 mx-auto max-h-80 overflow-y-auto w-full rounded-2xl overflow-hidden">

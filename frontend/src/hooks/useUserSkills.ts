@@ -9,12 +9,11 @@ const USER_SKILLS_QUERY = gql`
       id
       skillId
       knowledgeStatus
-      lookingForDevsWithIt
     }
   }
 `;
 type TUserSkillsQueryResponse = {
-  userSkills: TUserSkill[];
+  userSkills: Pick<TUserSkill, "id" | "skillId" | "knowledgeStatus">[];
 };
 
 export function useUserSkills(userId: string | null) {

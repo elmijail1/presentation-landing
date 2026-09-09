@@ -8,12 +8,10 @@ export type TSkill = {
 };
 
 export type TMatcherStage = "form" | "loading" | "match";
-export type TMatchResultData = {
-  score: number;
-  comment: string;
-};
+export type TMatchResults = { score: number; comment: string };
 
 export type TKnowledgeStatus = "HAS" | "WANTS_TO_LEARN" | null;
+
 export type TUserSkill = {
   id: string;
   skillId: string;

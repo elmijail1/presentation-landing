@@ -8,6 +8,8 @@ import { useSubmitMatch } from "../hooks/useSubmitMatch";
 import { ToastMatcherFailure } from "./Toasts";
 import { findMatchingTier } from "../data/matchResultsData";
 
+const SAVED_MATCH_RESULT = "saved-match-result";
+
 interface IMatcherProps {
   isIntroComplete: boolean;
   guestUserIdState: string | null;
@@ -27,6 +29,23 @@ export function Matcher({
   });
   const [showErrorToast, setShowErrorToast] = useState(false);
   const submitMatch = useSubmitMatch();
+
+  useEffect(() => {
+    try {
+      const savedMatchResult = localStorage.getItem(SAVED_MATCH_RESULT);
+      if (savedMatchResult) {
+        const score = Number(savedMatchResult);
+        if (!Number.isNaN(score)) {
+          setStage("match");
+          setMatchResult({ score, comment: findMatchingTier(score).comment });
+        } else {
+          localStorage.removeItem(SAVED_MATCH_RESULT);
+        }
+      }
+    } catch {
+      console.warn("Failed to check the local storage for saved match results");
+    }
+  }, []);
 
   function updateSkill(index: number, value: string) {
     setSkills((prev) => prev.map((skill, i) => (i === index ? value : skill)));
@@ -69,6 +88,17 @@ export function Matcher({
                 matchResponse.missingSkillNames.length)) *
               100,
           );
+
+          try {
+            if (score >= 70) {
+              localStorage.setItem(SAVED_MATCH_RESULT, String(score));
+            } else {
+              localStorage.removeItem(SAVED_MATCH_RESULT);
+            }
+          } catch {
+            console.warn("Failed to update the saved match result locally");
+          }
+
           const thresholdData = findMatchingTier(score);
           setMatchResult({
             score: score >= 10 ? score : 10,

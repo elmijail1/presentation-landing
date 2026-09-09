@@ -8,13 +8,13 @@ import { UsersService } from '../users/users.service.js';
 export class UserSkillsService {
   constructor(private readonly usersService: UsersService) {}
 
-  connect(
+  async connect(
     userId: string | undefined,
     skillId: string,
     knowledgeStatus?: EKnowledgeStatus,
     lookingForDevsWithIt?: boolean,
-  ): MUserSkill {
-    const user = this.usersService.findOrCreate(userId);
+  ): Promise<MUserSkill> {
+    const user = await this.usersService.findOrCreate(userId);
     const userIdSafe = user.id;
 
     const existing = userSkillsData.find(

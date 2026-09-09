@@ -8,7 +8,7 @@ export class MatchResolver {
   constructor(private readonly matchService: MatchService) {}
 
   @Mutation(() => MMatchResult)
-  submitMatch(@Args('input') input: SubmitMatchInput): MMatchResult {
+  submitMatch(@Args('input') input: SubmitMatchInput): Promise<MMatchResult> {
     return this.matchService.submit(input.userId, input.skillNames);
   }
 }

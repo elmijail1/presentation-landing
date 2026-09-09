@@ -8,6 +8,7 @@ import { SkillsModule } from './skills/skills.module.js';
 import { UsersModule } from './users/users.module.js';
 import { UserSkillsModule } from './user-skills/user-skills.module.js';
 import { MatchModule } from './match/match.module.js';
+import { PrismaModule } from './prisma/prisma.module.js';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MatchModule } from './match/match.module.js';
     UsersModule,
     UserSkillsModule,
     MatchModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,27 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { MUser } from './models/user.model.js';
-import { randomUUID } from 'crypto';
-import { generateGuestName, usersData } from './users.data.js';
+import { generateGuestName } from './guest-name.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class UsersService {
-  create(): MUser {
-    const user: MUser = {
-      id: randomUUID(),
-      name: generateGuestName(),
-      registeredOn: new Date(),
-    };
-    usersData.push(user);
-    return user;
+  constructor(private readonly prisma: PrismaService) {}
+
+  create(): Promise<MUser> {
+    return this.prisma.user.create({
+      data: { name: generateGuestName() },
+    });
   }
 
-  findById(id: string): MUser | undefined {
-    return usersData.find((user) => user.id === id);
+  findById(id: string): Promise<MUser | null> {
+    return this.prisma.user.findUnique({ where: { id } });
   }
 
-  findOrCreate(userId?: string): MUser {
+  async findOrCreate(userId?: string): Promise<MUser> {
     if (userId) {
-      const existing = this.findById(userId);
+      const existing = await this.findById(userId);
       if (existing) return existing;
       console.warn(
         `No user found with the id ${userId} – creating a new guest user instead.`,

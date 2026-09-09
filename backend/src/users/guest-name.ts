@@ -1,10 +1,3 @@
-import { MUser } from './models/user.model.js';
-
-export const usersData: MUser[] = [
-  { id: '1', name: 'Grumpy Owner', registeredOn: new Date(2026, 8, 8) },
-  { id: '2', name: 'Crazy Hamburger', registeredOn: new Date(2026, 8, 8) },
-];
-
 const ADJECTIVES = [
   'Pink',
   'Red',

@@ -13,9 +13,12 @@ export class MatchService {
     private readonly usersService: UsersService,
   ) {}
 
-  submit(userId: string | undefined, skillNames: string[]): MMatchResult {
-    const user = this.usersService.findOrCreate(userId);
-    const allSkills = this.skillsService.findAll();
+  async submit(
+    userId: string | undefined,
+    skillNames: string[],
+  ): Promise<MMatchResult> {
+    const user = await this.usersService.findOrCreate(userId);
+    const allSkills = await this.skillsService.findAll();
     const result: MMatchResult = {
       userId: user.id,
       matchedSkills: [],
@@ -27,7 +30,12 @@ export class MatchService {
         (s) => s.name.toLowerCase() === rawName.toLowerCase(),
       );
       if (skill) {
-        this.userSkillsService.connect(user.id, skill.id, undefined, true);
+        await this.userSkillsService.connect(
+          user.id,
+          skill.id,
+          undefined,
+          true,
+        );
         if (skill.myRelation === EMySkillRelation.HAVE) {
           result.matchedSkills.push(skill);
         } else {

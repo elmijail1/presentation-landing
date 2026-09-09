@@ -8,7 +8,9 @@ export class UserSkillsResolver {
   constructor(private readonly userSkillsService: UserSkillsService) {}
 
   @Mutation(() => MUserSkill)
-  connectUserSkill(@Args('input') input: ConnectUserSkillInput): MUserSkill {
+  connectUserSkill(
+    @Args('input') input: ConnectUserSkillInput,
+  ): Promise<MUserSkill> {
     return this.userSkillsService.connect(
       input.userId,
       input.skillId,
@@ -18,7 +20,9 @@ export class UserSkillsResolver {
   }
 
   @Query(() => [MUserSkill])
-  userSkills(@Args('userId', { type: () => ID }) userId: string): MUserSkill[] {
+  userSkills(
+    @Args('userId', { type: () => ID }) userId: string,
+  ): Promise<MUserSkill[]> {
     return this.userSkillsService.findByUser(userId);
   }
 }

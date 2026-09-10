@@ -49,8 +49,53 @@ const skills = [
 ];
 
 async function main() {
+  await prisma.userSkill.deleteMany();
+  await prisma.skillNameVariant.deleteMany();
   await prisma.skill.deleteMany();
   await prisma.skill.createMany({ data: skills });
+
+  const insertedSkills = await prisma.skill.findMany();
+  const skillIdByName = new Map(insertedSkills.map((s) => [s.name, s.id]));
+
+  const variants: { spelling: string; skillName: string }[] = [
+    { spelling: 'TS', skillName: 'TypeScript' },
+    { spelling: 'Type Script', skillName: 'TypeScript' },
+    { spelling: 'ReactJS', skillName: 'React' },
+    { spelling: 'React.js', skillName: 'React' },
+    { spelling: 'React JS', skillName: 'React' },
+    { spelling: 'Node JS', skillName: 'Node.js' },
+    { spelling: 'NodeJS', skillName: 'Node.js' },
+    { spelling: 'Node', skillName: 'Node.js' },
+    { spelling: 'Nest', skillName: 'NestJS' },
+    { spelling: 'Nest.js', skillName: 'NestJS' },
+    { spelling: 'Nest JS', skillName: 'NestJS' },
+    { spelling: 'Graph QL', skillName: 'GraphQL' },
+    { spelling: 'JS', skillName: 'JavaScript' },
+    { spelling: 'Java Script', skillName: 'JavaScript' },
+    { spelling: 'ECMA', skillName: 'JavaScript' },
+    { spelling: 'ECMAScript', skillName: 'JavaScript' },
+    { spelling: 'ECMA Script', skillName: 'JavaScript' },
+    { spelling: 'Postgres', skillName: 'PostgreSQL' },
+    { spelling: 'Postgre', skillName: 'PostgreSQL' },
+    { spelling: 'Postgre SQL', skillName: 'PostgreSQL' },
+    { spelling: 'Mongo', skillName: 'MongoDB' },
+    { spelling: 'Mongo DB', skillName: 'MongoDB' },
+    { spelling: 'Rabbit MQ', skillName: 'RabbitMQ' },
+    { spelling: 'Express JS', skillName: 'Express' },
+    { spelling: 'ExpressJS', skillName: 'Express' },
+    { spelling: 'Express.js', skillName: 'Express' },
+    { spelling: 'Next', skillName: 'Next.js' },
+    { spelling: 'NextJS', skillName: 'Next.js' },
+    { spelling: 'Next JS', skillName: 'Next.js' },
+    { spelling: 'Claude', skillName: 'Claude Code' },
+  ];
+
+  await prisma.skillNameVariant.createMany({
+    data: variants.map((v) => ({
+      spelling: v.spelling,
+      skillId: skillIdByName.get(v.skillName)!,
+    })),
+  });
 }
 
 main()

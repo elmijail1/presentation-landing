@@ -22,7 +22,16 @@ model Skill {
   name       String
   myRelation EMySkillRelation?
 
-  userSkills UserSkill[]
+  userSkills        UserSkill[]
+  skillNameVariants SkillNameVariant[]
+}
+
+model SkillNameVariant {
+  id       String @id @default(uuid())
+  spelling String @unique
+  skillId  String
+
+  skill Skill @relation(fields: [skillId], references: [id])
 }
 
 model User {

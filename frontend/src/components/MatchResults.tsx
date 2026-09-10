@@ -40,7 +40,7 @@ export function MatchResults({ stage, setStage, data }: IMatchResultsProps) {
       >
         {data.score}%
       </p>
-      <div className="w-full text-3xl text-gray-500 flex flex-col gap-1 items-center text-center">
+      <div className="w-full text-3xl text-gray-500 flex flex-col gap-1 items-center text-center max-w-[80%]">
         <p>{data.comment} Reach out in any way you like:</p>
         <ul className="list-disc text-left underline leading-12">
           <li>

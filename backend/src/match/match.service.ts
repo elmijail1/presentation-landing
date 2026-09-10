@@ -18,7 +18,6 @@ export class MatchService {
     skillNames: string[],
   ): Promise<MMatchResult> {
     const user = await this.usersService.findOrCreate(userId);
-    const allSkills = await this.skillsService.findAll();
     const result: MMatchResult = {
       userId: user.id,
       matchedSkills: [],
@@ -26,9 +25,7 @@ export class MatchService {
     };
 
     for (const rawName of skillNames) {
-      const skill = allSkills.find(
-        (s) => s.name.toLowerCase() === rawName.toLowerCase(),
-      );
+      const skill = await this.skillsService.findByNameOrVariant(rawName);
       if (skill) {
         await this.userSkillsService.connect(
           user.id,
@@ -45,7 +42,6 @@ export class MatchService {
         result.missingSkillNames.push(rawName);
       }
     }
-
     return result;
   }
 }

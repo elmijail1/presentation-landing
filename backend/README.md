@@ -1,114 +1,136 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Portfolio's backend
+This backend app is for my portfolio website's data layer. It's a part of a two-folder repo (frontend / backend).
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Tech stack
+- NestJS
+- GraphQL (code-first, Apollo Server)
+- PostgreSQL
+- Prisma
+- Docker
+- TypeScript
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Architecture
+There are 4 main data domains: Skill, User, UserSkill, and Match.
+- Skill – a skill is basically a certain technology used in web development. Each has a name: e.g. React, TypeScript. Each skill also marked in regard to its relation to me: whether I have it, whether I want to learn it, or whether I have no relation to it (undefined).
+- User – a visitor that has interacted with the portfolio. A user object is created for whoever has checked any box in the app's tables or submitted a match check.
+- UserSkill – an entity connecting Users and Skills, since they can exist in a many-to-many relationship. A user can check skills as "I have it" or "I want to learn it" – this will be reflected in a UserSkill object. Another thing that is reflected in it is whether you're looking for this skill in a developer (flipped to true if you've submitted a match check with this skill).
+- Match – not a separate entity / schema per se, but a domain nontheless – it contains logic for matching that is used when you submit the match-check form.
 
-## Description
+## Prerequisites
+- Node 26+
+- Postgres running locally or via Docker
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Environment variables (.env)
+- DATABASE_URL – Postgres connection string
+- PORT – server port (defaults to 3000)
+- FRONTEND_URL – allowed CORS origin (defaults to http://localhost:5173)
 
-## Project setup
+## Running locally (without Docker)
+This local setup assumes you're on macOS and use Homebrew. If this doesn't apply to you, consider running with Docker (see next section for details).
+1. Install dependencies: npm install
+2. Set up Postgres
+  - Install: brew install postgresql@16
+  - Start it: brew services start postgresql@16
+  - Create the DB: createdb portfolio_dev
+3. Set .env (see the respective section)
+4. Migrate Prisma: npx prisma migrate dev
+5. Seed the DB: npx prisma db seed
+6. Run: npm run start:dev
 
-```bash
-$ npm install
-```
+## Running with Docker
+1. Build a container: docker compose up --build
+2. Seed the container's DB: docker compose exec backend npx prisma db seed – if you choose to run it in Docker's GUI, just run "npx prisma db seed" in the backend container
+Note that Docker uses a separate DB from the local setup (ports 5433 vs 5432).
 
-## Compile and run the project
+## Database migration
+- Create a new migration: prisma migrate dev --name ...
+- Seeding: npx prisma db seed – it adds initial data to the DB (skills + spelling dictionary)
+- Spelling dictionary: skill name variants used for matching: e.g. JS would match JavaScript
+- ! Danger: seeding is destructive for the DB's data. If your DB contains some data other than the initial one, be aware that you'll lose it after seeding. To be precise, you'll lose all data for UserSkill, while Skill and SkillNameVariant will be reset to the initial data.
 
-```bash
-# development
-$ npm run start
+## GraphQL API
+All requests go through a single endpoint: /graphql
+With the server running, open http://localhost:3000/graphql in a browser for an interactive Apollo Sandbox with full schema autocompletion – you can paste any example from below to it:
 
-# watch mode
-$ npm run start:dev
+### skills – query
+Fetch skills, optionally filter them by the relation to me (HAVE / WANT_TO_LEARN).
+\`\`\`graphql
+query {
+  skills(myRelation: HAVE) {
+    id
+    name
+    myRelation
+  }
+}
+\`\`\`
 
-# production mode
-$ npm run start:prod
-```
+### userSkills – query
+List a guest user's existing skill connections (used for restoring checkboxes on return visits)
+\`\`\`graphql
+query {
+  userSkills(userId: "some-user-id-here") {
+    id
+    skillId
+    knowledgeStatus
+    lookingForDevsWithIt
+  }
+}
+\`\`\`
 
-## Run tests
+### createGuestUser – mutation
+Create a new anonymous guest user. Isn't used on its own: it's used inside connectUserSkill and submitMatch.
+\`\`\`graphql
+mutation {
+  createGuestUser {
+    id
+    name
+    registeredOn
+  }
+}
+\`\`\`
 
-```bash
-# unit tests
-$ npm run test
+### connectUserSkill – mutation
+Connect a guest user to a skill. Omit userId in the input to auto-create a guest.
+\`\`\`graphql
+mutation {
+  connectUserSkill(input: {
+    skillId: "some-skill-id-here",
+    knowledgeStatus: HAS
+  }) {
+    id
+    userId
+    skillId
+    knowledgeStatus
+    lookingForDevsWithIt
+  }
+}
+\`\`\`
 
-# e2e tests
-$ npm run test:e2e
+### submitMatch – mutation
+Submit up to 5 skill names and see how that set matches my skillset.
+\`\`\`graphql
+mutation {
+  submitMatch(input: {
+    skillNames: ["typescript", "js", "fake skill"]
+  }) {
+    userId
+    matchedSkills {
+      id
+      name
+    }
+    missingSkillNames
+  }
+}
+\`\`\`
 
-# test coverage
-$ npm run test:cov
-```
 
-## Deployment
+## npm scripts
+- start:dev – run the server locally
+- build – compile for production
+- start:prod – run the compiled build
+- lint - run oxlint
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Observability
-
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observer](https://observer.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Project structure
+- src/skills, src/users, src/user-skills, src/match – semantic domains, each of which contains models, services, and resolvers for the specified domain. UserSkills and Match also have a DTO, since related mutations take multi-field input.
+- src/prisma – Prisma-Nest setup
+- prisma/schema.prisma – Prisma schemas for the domains

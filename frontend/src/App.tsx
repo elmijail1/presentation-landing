@@ -4,6 +4,7 @@ import { Matcher } from "./components/Matcher";
 import { TablesSection } from "./components/TablesSection";
 import { ContactsButton } from "./components/ContactsButton";
 import { useGuestUserId } from "./hooks/useGuestUserId";
+import { PastWork } from "./components/PastWork";
 
 function App() {
   const [isIntroComplete, setIsIntroComplete] = useState(false);
@@ -22,6 +23,9 @@ function App() {
         guestUserIdState={guestUserIdState}
         setGuestUserIdStateAndStorage={setGuestUserIdStateAndStorage}
       />
+
+      <PastWork isIntroComplete={isIntroComplete} />
+
       <ContactsButton />
     </main>
   );

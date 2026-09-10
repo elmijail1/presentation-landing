@@ -3,10 +3,7 @@ import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
 import { ToastCopyFailure, ToastCopySuccess } from "./Toasts";
 import type React from "react";
 import { Button } from "./ui/button";
-
-const URL_LINKEDIN = import.meta.env.VITE_URL_LINKEDIN || "";
-const URL_GITHUB = import.meta.env.VITE_URL_GITHUB || "";
-const EMAIL_ADDRESS = import.meta.env.VITE_EMAIL_ADDRESS || "";
+import { EMAIL_ADDRESS, URL_GITHUB, URL_LINKEDIN } from "@/data/publicContacts";
 
 interface IMatchResultsProps {
   stage: TMatcherStage;

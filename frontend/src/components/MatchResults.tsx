@@ -35,7 +35,7 @@ export function MatchResults({ stage, setStage, data }: IMatchResultsProps) {
     <div
       className={`mt-10 w-[90%] flex flex-col items-center gap-2 duration-1000 transition-all ease-out ${stage === "match" ? "opacity-100" : "opacity-0 h-0 hidden"}`}
     >
-      <h2>How do we match? 👀</h2>
+      <h2 className="text-center">How do we match? 👀</h2>
       <p
         className={`text-6xl font-extrabold bg-linear-to-r bg-clip-text text-transparent ${determineColor()}`}
       >

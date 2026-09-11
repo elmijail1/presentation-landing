@@ -80,7 +80,7 @@ export function TableSkills({
 
   return (
     <div className="w-1/2 max-md:w-full flex flex-col items-center">
-      <h2 className="font-bold mb-3 md:text-nowrap">{caption}</h2>
+      <h2 className="font-bold mb-3 md:text-nowrap text-center">{caption}</h2>
       <div className="mb-2 w-[90%] flex justify-center gap-2 text-xl items-center">
         <label>
           🔎 <span className="max-sm:hidden">Filter:</span>

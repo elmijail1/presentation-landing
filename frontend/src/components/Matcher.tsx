@@ -156,7 +156,7 @@ export function Matcher({
             );
           })}
         </div>
-        <div className="mt-4 flex justify-around">
+        <div className="mt-4 flex justify-center gap-2 md:justify-around md:gap-0">
           <Button
             type="button"
             variant="outline"

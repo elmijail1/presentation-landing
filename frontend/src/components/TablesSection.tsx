@@ -96,7 +96,7 @@ export function TablesSection({
           isError={isErrorWantToLearnSkills}
           checkedSkillIds={wantToLearnCheckedSkillIds}
           color="purple"
-          secondColHeader="Want to learn it too?"
+          secondColHeader="Want it too?"
           onToggle={(skillId, checked) =>
             handleToggle(skillId, "WANTS_TO_LEARN", checked)
           }

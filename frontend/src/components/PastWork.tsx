@@ -23,7 +23,7 @@ export function PastWork({ isIntroComplete }: IPastWorkProps) {
         </a>
         . But here are a few highlights.
       </p>
-      <div className="flex flex-col gap-8 mt-2 md:flex-row md:items-start md:flex-wrap md:justify-center">
+      <div className="flex flex-col max-md:gap-10 gap-8 mt-2 md:flex-row md:items-start md:flex-wrap md:justify-center">
         {pastWorkData.map((d) => (
           <PastWorkItem data={d} />
         ))}

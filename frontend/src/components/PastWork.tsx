@@ -10,7 +10,7 @@ export function PastWork({ isIntroComplete }: IPastWorkProps) {
     <div
       className={`flex flex-col items-center gap-4 w-[90%] mt-4 ${isIntroComplete ? "opacity-100" : "opacity-0 h-0"}`}
     >
-      <h2>What I've worked on ⏮️</h2>
+      <h2 className="text-center max-md:w-70">What I've worked on ⏮️</h2>
       <p className="text-3xl text-gray-500 text-center -mt-2 max-w-[80%]">
         You can find my full portfolio on{" "}
         <a

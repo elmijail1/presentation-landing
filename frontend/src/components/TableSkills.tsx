@@ -106,20 +106,25 @@ export function TableSkills({
           <TableBody className={`text-center ${determineColor(color, "body")}`}>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={2} className="text-center py-8">
+                <TableCell
+                  colSpan={2}
+                  className="text-center py-8 text-gray-500 font-semibold"
+                >
                   <span className="animate-pulse">Loading...</span>
                 </TableCell>
               </TableRow>
             )}
             {isError && (
               <TableRow>
-                <TableCell colSpan={2} className="text-center py-8">
+                <TableCell
+                  colSpan={2}
+                  className="text-center py-8 text-gray-500 font-semibold"
+                >
                   Failed to load, try again later
                 </TableCell>
               </TableRow>
             )}
-            {!isLoading &&
-              !isError &&
+            {!isLoading && !isError && filteredSkills.length ? (
               filteredSkills.map((skill) => (
                 <TableRow key={skill.id}>
                   <TableCell>{skill.name}</TableCell>
@@ -133,7 +138,17 @@ export function TableSkills({
                     />
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={2}
+                  className="text-center py-8 text-gray-500 font-semibold"
+                >
+                  Nothing found
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

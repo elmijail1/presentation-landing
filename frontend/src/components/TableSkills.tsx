@@ -80,7 +80,7 @@ export function TableSkills({
 
   return (
     <div className="w-1/2 max-md:w-full flex flex-col items-center">
-      <h2 className="font-bold mb-3 md:text-nowrap">{caption}</h2>
+      <h2 className="font-bold mb-3 md:text-nowrap text-center">{caption}</h2>
       <div className="mb-2 w-[90%] flex justify-center gap-2 text-xl items-center">
         <label>
           🔎 <span className="max-sm:hidden">Filter:</span>
@@ -106,20 +106,25 @@ export function TableSkills({
           <TableBody className={`text-center ${determineColor(color, "body")}`}>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={2} className="text-center py-8">
+                <TableCell
+                  colSpan={2}
+                  className="text-center py-8 text-gray-500 font-semibold"
+                >
                   <span className="animate-pulse">Loading...</span>
                 </TableCell>
               </TableRow>
             )}
             {isError && (
               <TableRow>
-                <TableCell colSpan={2} className="text-center py-8">
+                <TableCell
+                  colSpan={2}
+                  className="text-center py-8 text-gray-500 font-semibold"
+                >
                   Failed to load, try again later
                 </TableCell>
               </TableRow>
             )}
-            {!isLoading &&
-              !isError &&
+            {!isLoading && !isError && filteredSkills.length ? (
               filteredSkills.map((skill) => (
                 <TableRow key={skill.id}>
                   <TableCell>{skill.name}</TableCell>
@@ -133,7 +138,17 @@ export function TableSkills({
                     />
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={2}
+                  className="text-center py-8 text-gray-500 font-semibold"
+                >
+                  Nothing found
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

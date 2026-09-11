@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
 import { ToastCopyFailure, ToastCopySuccess } from "./Toasts";
-import { EMAIL_ADDRESS, URL_GITHUB, URL_LINKEDIN } from "@/data/publicContacts";
+import {
+  EMAIL_ADDRESS,
+  URL_GITHUB,
+  URL_LINKEDIN,
+} from "../data/publicContacts";
 
 export function ContactsButton() {
   const [contactsOpen, setContactsOpen] = useState(false);
@@ -9,7 +13,7 @@ export function ContactsButton() {
 
   return (
     <>
-      <div className="fixed bottom-4 right-4 text-2xl">
+      <div className="fixed bottom-4 right-4 text-2xl z-50">
         <button
           type="button"
           onClick={() => setContactsOpen((prev) => !prev)}

@@ -8,10 +8,10 @@ interface IPastWorkProps {
 export function PastWork({ isIntroComplete }: IPastWorkProps) {
   return (
     <div
-      className={`flex flex-col items-center gap-4 w-[90%] mt-4 ${isIntroComplete ? "opacity-100" : "opacity-0 h-0"}`}
+      className={`flex flex-col items-center w-[90%] mt-4 ${isIntroComplete ? "opacity-100" : "opacity-0 h-0"}`}
     >
-      <h2>What I've worked on ⏮️</h2>
-      <p className="text-3xl text-gray-500 text-center -mt-2 max-w-[80%]">
+      <h2 className="text-center max-md:w-70">What I've worked on ⏮️</h2>
+      <p className="text-center text-2xl text-gray-400 mt-2 mb-4">
         You can find my full portfolio on{" "}
         <a
           href="https://github.com/elmijail1"
@@ -23,7 +23,7 @@ export function PastWork({ isIntroComplete }: IPastWorkProps) {
         </a>
         . But here are a few highlights.
       </p>
-      <div className="flex flex-col gap-8 mt-2 md:flex-row md:items-start md:flex-wrap md:justify-center">
+      <div className="flex flex-col max-md:gap-10 gap-8 mt-2 md:flex-row md:items-start md:flex-wrap md:justify-center">
         {pastWorkData.map((d) => (
           <PastWorkItem data={d} />
         ))}

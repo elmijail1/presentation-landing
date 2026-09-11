@@ -3,7 +3,11 @@ import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
 import { ToastCopyFailure, ToastCopySuccess } from "./Toasts";
 import type React from "react";
 import { Button } from "./ui/button";
-import { EMAIL_ADDRESS, URL_GITHUB, URL_LINKEDIN } from "@/data/publicContacts";
+import {
+  EMAIL_ADDRESS,
+  URL_GITHUB,
+  URL_LINKEDIN,
+} from "../data/publicContacts";
 
 interface IMatchResultsProps {
   stage: TMatcherStage;
